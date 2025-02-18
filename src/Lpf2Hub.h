@@ -129,7 +129,6 @@ public:
   BLEAddress *_pServerAddress;
   BLEAddress *_requestedDeviceAddress = nullptr;
   BLERemoteCharacteristic *_pRemoteCharacteristic;
-  BLEScan *pBLEScan;
   HubType _hubType;
   std::string _hubName;
   boolean _isConnecting;
@@ -138,6 +137,7 @@ public:
 private:
   // Notification callbacks
   HubPropertyChangeCallback _hubPropertyChangeCallback = nullptr;
+  NimBLEScanCallbacks *_advertiseDeviceCallback = nullptr;
 
   // List of connected devices
   Device connectedDevices[13];

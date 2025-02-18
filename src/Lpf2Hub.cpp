@@ -54,17 +54,26 @@ public:
 /**
  * Scan for BLE servers and find the first one that advertises the service we are looking for.
  */
-class Lpf2HubAdvertisedDeviceCallbacks : public NimBLEAdvertisedDeviceCallbacks
+class Lpf2HubAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks
 {
     Lpf2Hub *_lpf2Hub;
 
 public:
-    Lpf2HubAdvertisedDeviceCallbacks(Lpf2Hub *lpf2Hub) : NimBLEAdvertisedDeviceCallbacks()
+    Lpf2HubAdvertisedDeviceCallbacks(Lpf2Hub *lpf2Hub) : BLEAdvertisedDeviceCallbacks()
     {
         _lpf2Hub = lpf2Hub;
     }
+    
+    void onScanEnd(const NimBLEScanResults& results, int reason) override
+    {
+        log_d("Scan Ended reason: %d\nNumber of devices: %d", reason, results.getCount());
+        for (int i = 0; i < results.getCount(); i++)
+        {
+            log_d("device[%d]: %s", i, results.getDevice(i).toString().c_str());
+        }
+    }
 
-    void onResult(NimBLEAdvertisedDevice *advertisedDevice)
+    void onResult(const NimBLEAdvertisedDevice* advertisedDevice) override
     {
         //Found a device, check if the service is contained and optional if address fits requested address
         log_d("advertised device: %s", advertisedDevice->toString().c_str());
@@ -813,14 +822,22 @@ void Lpf2Hub::init()
     _hubType = HubType::UNKNOWNHUB;
 
     BLEDevice::init("");
-    pBLEScan = BLEDevice::getScan();
+    BLEScan *pBLEScan = BLEDevice::getScan();
 
-    pBLEScan->setAdvertisedDeviceCallbacks(new Lpf2HubAdvertisedDeviceCallbacks(this));
+    _advertiseDeviceCallback = new Lpf2HubAdvertisedDeviceCallbacks(this);
+
+    if (_advertiseDeviceCallback == nullptr)
+    {
+        log_e("failed to create advertise device callback");
+        return;
+    }
+
+    pBLEScan->setScanCallbacks(_advertiseDeviceCallback);
 
     pBLEScan->setActiveScan(true);
     // start method with callback function to enforce the non blocking scan. If no callback function is used,
     // the scan starts in a blocking manner
-    pBLEScan->start(_scanDuration, scanEndedCallback);
+    pBLEScan->start(_scanDuration);
 }
 
 /**
@@ -829,7 +846,7 @@ void Lpf2Hub::init()
  */
 void Lpf2Hub::init(std::string deviceAddress)
 {
-    _requestedDeviceAddress = new BLEAddress(deviceAddress);
+    _requestedDeviceAddress = new BLEAddress(deviceAddress, 0);
     init();
 }
 
@@ -850,7 +867,7 @@ void Lpf2Hub::init(uint32_t scanDuration)
  */
 void Lpf2Hub::init(std::string deviceAddress, uint32_t scanDuration)
 {
-    _requestedDeviceAddress = new BLEAddress(deviceAddress);
+    _requestedDeviceAddress = new BLEAddress(deviceAddress, 0);
     _scanDuration = scanDuration;
     init();
 }
@@ -1089,7 +1106,7 @@ bool Lpf2Hub::connectHub()
     log_d("number of ble clients: %d", NimBLEDevice::getClientListSize());
 
     /** Check if we have a client we should reuse first **/
-    if (NimBLEDevice::getClientListSize())
+    if (NimBLEDevice::getCreatedClientCount())
     {
         /** Special case when we already know this device, we send false as the 
          *  second argument in connect() to prevent refreshing the service database.
@@ -1117,9 +1134,9 @@ bool Lpf2Hub::connectHub()
     /** No client to reuse? Create a new one. */
     if (!pClient)
     {
-        if (NimBLEDevice::getClientListSize() >= NIMBLE_MAX_CONNECTIONS)
+        if (NimBLEDevice::getCreatedClientCount() >= NIMBLE_MAX_CONNECTIONS)
         {
-            log_w("max clients reached - no more connections available: %d", NimBLEDevice::getClientListSize());
+            log_w("max clients reached - no more connections available: %d", NimBLEDevice::getCreatedClientCount());
             return false;
         }
 
