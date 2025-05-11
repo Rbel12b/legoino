@@ -19,7 +19,7 @@ void scanEndedCallback(NimBLEScanResults results)
     log_d("Number of devices: %d", results.getCount());
     for (int i = 0; i < results.getCount(); i++)
     {
-        log_d("device[%d]: %s", i, results.getDevice(i).toString().c_str());
+        log_d("device[%d]: %s", i, results.getDevice(i)->toString().c_str());
     }
 }
 
@@ -69,7 +69,7 @@ public:
         log_d("Scan Ended reason: %d\nNumber of devices: %d", reason, results.getCount());
         for (int i = 0; i < results.getCount(); i++)
         {
-            log_d("device[%d]: %s", i, results.getDevice(i).toString().c_str());
+            log_d("device[%d]: %s", i, results.getDevice(i)->toString().c_str());
         }
     }
 
@@ -1103,7 +1103,7 @@ bool Lpf2Hub::connectHub()
     BLEAddress pAddress = *_pServerAddress;
     NimBLEClient *pClient = nullptr;
 
-    log_d("number of ble clients: %d", NimBLEDevice::getClientListSize());
+    log_d("number of ble clients: %d", NimBLEDevice::getCreatedClientCount());
 
     /** Check if we have a client we should reuse first **/
     if (NimBLEDevice::getCreatedClientCount())

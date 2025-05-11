@@ -16,6 +16,20 @@
 
 #include "Lpf2HubEmulation.h"
 
+#include <sstream>
+#include <iomanip>
+
+std::string toCommaSeparatedHex(const std::vector<uint8_t>& data) {
+    std::ostringstream oss;
+    for (size_t i = 0; i < data.size(); ++i) {
+        if (i > 0) oss << ", ";
+        oss << "0x"
+            << std::hex << std::setw(2) << std::setfill('0')
+            << static_cast<int>(data[i]);
+    }
+    return oss.str();
+}
+
 class Lpf2HubServerCallbacks : public NimBLEServerCallbacks
 {
 
@@ -284,7 +298,7 @@ byte Lpf2HubEmulation::getDeviceTypeForPort(byte portNumber)
   log_d("Number of connected devices: %d", numberOfConnectedDevices);
   for (int idx = 0; idx < numberOfConnectedDevices; idx++)
   {
-    log_v("device %d, port number: %x, device type: %x, callback address: %x", idx, connectedDevices[idx].PortNumber, connectedDevices[idx].DeviceType, connectedDevices[idx].Callback);
+    log_v("device %d, port number: %x, device type: %x", idx, connectedDevices[idx].PortNumber, connectedDevices[idx].DeviceType);
     if (connectedDevices[idx].PortNumber == portNumber)
     {
       log_d("device on port %x has type %x", portNumber, connectedDevices[idx].DeviceType);
@@ -454,8 +468,8 @@ void Lpf2HubEmulation::start()
   uint8_t slaveConnectionIntervalRangeData[6] = {0x05, 0x12, 0x10, 0x00, 0x20, 0x00};
   scanResponseData.addData(slaveConnectionIntervalRangeData, sizeof(slaveConnectionIntervalRangeData));
 
-  log_d("advertisment data payload(%d): %s", advertisementData.getPayload().length(), advertisementData.getPayload().c_str());
-  log_d("scan response data payload(%d): %s", scanResponseData.getPayload().length(), scanResponseData.getPayload().c_str());
+  log_d("advertisment data payload(%d): %s", advertisementData.getPayload().size(), toCommaSeparatedHex(advertisementData.getPayload()).c_str());
+  log_d("scan response data payload(%d): %s", scanResponseData.getPayload().size(), toCommaSeparatedHex(scanResponseData.getPayload()).c_str());
 
   _pAdvertising->setAdvertisementData(advertisementData);
   _pAdvertising->setScanResponseData(scanResponseData);
