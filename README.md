@@ -2,13 +2,13 @@
 
 *Disclaimer*: LEGO® is a trademark of the LEGO Group of companies which does not sponsor, authorize or endorse this project.
 
-## About this fork
-
-This fork adds support for [NimBLE-Arduino](https://github.com/h2zero/NimBLE-Arduino) version 2.x
-
 **Legoino** is an Arduino Library for controlling all kinds of *LEGO* Powered UP devices. From the two port hub, Move Hub (e.g. Boost), DUPLO train hub, Technic Hub to several devices like distance and color sensor, tilt sensor, train motor, remote control, speedometer, etc. you can control almost everything with that library and your Arduino sketch.
 
 It is also possible to use the "old" Power Function IR Modules and control them via an IR LED connected to a PIN of your ESP32 device. With the Hub emulation function you can even control an "old" Power Function Light or Motor with the Powered Up app.
+
+## About this fork
+
+This fork adds support for [NimBLE-Arduino](https://github.com/h2zero/NimBLE-Arduino) version 2.x
 
 ## Arduino Hardware and dependent libraries
 
