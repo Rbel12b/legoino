@@ -1,11 +1,10 @@
 # Legoino
 
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/legoinochat?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/corneliusmunz/legoino)](https://github.com/corneliusmunz/legoino/releases/latest/)
-[![arduino-library-badge](https://www.ardu-badge.com/badge/Legoino.svg?)](https://www.ardu-badge.com/Legoino)
-![BuildExampleSketches](https://github.com/corneliusmunz/legoino/workflows/BuildExampleSketches/badge.svg?branch=master)
-
 *Disclaimer*: LEGO® is a trademark of the LEGO Group of companies which does not sponsor, authorize or endorse this project.
+
+## About this fork
+
+This fork adds support for [NimBLE-Arduino](https://github.com/h2zero/NimBLE-Arduino) version 2.x
 
 **Legoino** is an Arduino Library for controlling all kinds of *LEGO* Powered UP devices. From the two port hub, Move Hub (e.g. Boost), DUPLO train hub, Technic Hub to several devices like distance and color sensor, tilt sensor, train motor, remote control, speedometer, etc. you can control almost everything with that library and your Arduino sketch.
 
